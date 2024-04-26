@@ -1,0 +1,78 @@
+#word-grid {
+    display: grid;
+    grid-template-columns: repeat(15, 2em);
+    gap: 5px;
+    margin-bottom: 20px;
+    justify-content: center;
+}
+
+#word-grid div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 2em; 
+    width: 2em;
+    border: 1px solid #cccccc;
+    color: black;
+}
+
+.found {
+    color: red; 
+    font-weight: bold; 
+    text-decoration: line-through; 
+}
+
+#word-grid div.selected {
+    background-color: hwb(175 3% 5%);
+}
+
+#word-list {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+#word-list ul {
+    list-style: none;
+    padding: 0;
+}
+
+#word-list li {
+    background-color: #9eb4fa;
+    border: 1px solid #bc8de2;
+    margin-bottom: 5px;
+    padding: 5px;
+    cursor: pointer;
+}
+
+#word-list li..found {
+    text-decoration: line-through;
+    color: rgb(32, 28, 28);
+}
+
+#score-container {
+    margin-bottom: 20px;
+}
+
+h1, h2 {
+    color: #1b191d;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #646de4;
+}
+
+#game-container {
+    width: auto;
+    max-width: 600px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background-color: #ccdcf5;
+    margin: 20px auto;
+}
+

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Satoshis Vision</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" type="text/css" href="Q1style.css">
+
+  <script type="text/javascript" src="https://unpkg.com/bsv@1.5.3/bsv.min.js"></script>
+  <script type="text/javascript" src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+  <script src="https://unpkg.com/bsv@1.5.3/bsv-mnemonic.min.js"></script>
+</head>
+<body>
+  <div id="cryptoMain">
+    <h2>Bitcoin Wallet, Satoshis Vision!</h2>
+    <p id="walletBalance">Connect your wallet to see the balance</p> 
+    
+    <button id="walletGenerator">Initialize Wallet</button>
+
+    <div id="qrContainer" style="display: flex; justify-content: center;">
+      <div id="qrFrame">
+        <div id="qrCode"></div>
+      </div>
+    </div>
+
+    <div id="detailsBox">
+      <div class="detailItem">
+        <p class="detailTitle">Public Key</p>
+        <p id="publicKeyOutput"></p>
+      </div>
+
+      <div class="detailItem">
+        <p class="detailTitle">Private Key</p>
+        <p id="privateKeyOutput"></p>
+      </div>
+
+      <div class="detailItem">
+        <p class="detailTitle">Mnemonic</p>
+        <p id="recoveryPhrase"></p>
+      </div>
+
+      <div class="detailItem">
+        <p class="detailTitle">Crypto Address</p>
+        <p id="cryptoAddress"></p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('walletGenerator').onclick = function() {
+        var CryptoMnemonic = window.bsvMnemonic;
+        var seedWords = CryptoMnemonic.fromRandom();
+        document.getElementById("recoveryPhrase").textContent = seedWords.toString();
+
+        var hdPrivate = bsv.HDPrivateKey.fromSeed(seedWords.toSeed());
+        var privateK = hdPrivate.deriveChild("m/44'/0'/0'").privateKey;
+        var publicK = bsv.PublicKey.fromPrivateKey(privateK);
+        var walletAddr = bsv.Address.fromPublicKey(publicK, 'livenet');
+    
+        document.getElementById("publicKeyOutput").textContent = publicK.toString();
+        document.getElementById("privateKeyOutput").textContent = privateK.toString();
+        document.getElementById("cryptoAddress").textContent = walletAddr.toString();
+    
+        var qrOutput = document.getElementById("qrCode");
+        qrOutput.innerHTML = '';
+        new QRCode(qrOutput, {
+          text: walletAddr.toString(),
+          width: 200,
+          height: 200,
+          colorDark : "#000",
+          colorLight : "#fff",
+          correctLevel : QRCode.CorrectLevel.H
+        });
+    
+        fetch(`https://api.blockchair.com/bitcoin/dashboards/address/${walletAddr}`)
+          .then(response => response.json())
+          .then(data => {
+            var acctBalance = data.data[walletAddr.toString()].address.balance / 1e8;
+            document.getElementById('walletBalance').textContent = `Balance: ${acctBalance} BTC`;
+          })
+          .catch(err => {
+            console.error('Error retrieving balance:', err);
+            document.getElementById('walletBalance').textContent = '0 BTC';
+          });
+    };
+  </script>
+</body>
+</html>
